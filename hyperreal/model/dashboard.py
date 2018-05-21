@@ -44,4 +44,3 @@ class BaseDashboard:
         for component in self.components:
             deps.append(component.get_dependencies())
         return deps
-

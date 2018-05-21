@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Hyperreal{%endblock%}</h1>
+{% endblock %}
+
+{% block content %}
+{% if dashes %}
+    <h3>Dashboards</h3>
+    <ul>
+    {% for item in dashes %}
+        <li><a href="/dash/{{item.slug}}">{{item.name}}</a>: {{item.description}}</li>
+    {% endfor %}
+    </ul>
+
+{% endif %}
+{% endblock %}

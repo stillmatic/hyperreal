@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    {% block title %}{{dash.name}}{%endblock%}
+{% endblock %}
+
+{% block content %}
+    <h3>{{ dash.name }}</h3>
+    <p class="lead">Description: {{ dash.description }}</p>
+    <div id="app">
+    {% for component in dash.components %}
+        <h5>{{component.name}}</h5>
+        <strong>Graph</strong>
+        <div id="chart_{{component.slug}}" class="chart"></div>
+        <strong>Data Table:</strong>
+        <br>
+        <form action="/component/{{component.slug}}/get_chart_data" method='POST'>
+            <div class="form-inline form-row align-items-center">
+                {% for dim_col in component.dim_cols %}
+                <div class="col-auto">
+                    <label for="form_{{component.slug}}_{{dim_col}}_filter">{{dim_col}}</label>
+                    <select multiple class="form-control" name="form_{{component.slug}}_{{dim_col}}_filter">
+                        {% for val in component.get_distinct_values(dim_col)%}
+                            <option value="{{val}}">{{val}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endfor %}
+                <div class="col-auto">
+                    <label for="form_{{component.slug}}_grouping">Grouping variables</label>
+                    <select multiple class="form-control" name="form_{{component.slug}}_grouping">
+                        {% for dim_col in component.dim_cols %}
+                            <option value="{{dim_col}}">{{dim_col}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label for="form_{{component.slug}}_val_cols">Outcome variables</label>
+                    <select multiple class="form-control" name="form_{{component.slug}}_val_cols">
+                        {% for val_col in component.val_cols %}
+                            <option value="{{val_col}}" selected>{{val_col}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" name='submit_{{component.slug}}'>Update</button>
+            </div>
+        </form>
+        <p>{{component.table_chart_data(**{'req_val_cols': ['total_budget'], 'groupby_cols': ['country'], 'filter_cols': [('country', '"USA"')]}) | safe}}</p>
+    {% endfor %}
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.1/c3.min.js" integrity="sha256-82zLIsN6rOOYGFcS1tiDe7SCejywbkYtNa97M8SZJV0=" crossorigin="anonymous"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>window.jQuery</script>
+{#     <script>
+        $(function() {
+            $('#submit_movies').on('click', function(){
+                var fd = new FormData(document.querySelector("form"));
+                console.log(fd)
+                $.ajax({
+                   url: "/component/" ,
+                   type: "POST",
+                   data: fd,
+                   processData: false,  // tell jQuery not to process the data
+                   contentType: false   // tell jQuery not to set contentType
+                });
+            });
+        })
+    </script>
+ #}{% endblock%}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.1/c3.min.css" integrity="sha256-XbDgDVTFSKiioy1p5HKXXNZN9xEIvmJJXqII2Iha1xk=" crossorigin="anonymous" />
+{% endblock %}

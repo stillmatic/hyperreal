@@ -1,1 +1,3 @@
-from . import backend
+from . import dashboard
+from . import component
+from . import dependency
